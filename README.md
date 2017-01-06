@@ -8,6 +8,4 @@ $ npm install
 $ node index.js
 ```
 
-Then open browser
-
-[localhost](http://localhost/)
+Then open browser [http://localhost/](http://localhost/)
