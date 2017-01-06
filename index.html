@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+    <title>web-chating</title>
+    <style>
+        #chating { width:400px; }
+        #chating textarea,
+        #chating input   { width:100%; }
+
+        #chating #message-window { height: 300px;
+         border:1px solid #eee; overflow-y: auto; word-break: break-all;
+         font-size:12px; }
+        #message-window .msg-time { color:#aaa; font-size:.8em; }
+        #message-window .msg-author { background-color:grey; border-radius:3px; color:white; padding:0 .5em; }
+    </style>
+</head>
+<body>
+
+<div id="chating">
+    <form id="myForm">
+
+        <select name="room">
+            <option value="room1">ROOM 1</option>
+        </select>
+
+        <div id="message-window">
+            <ul></ul>
+        </div>
+
+        <input type="text" name="name" placeholder="name" />
+        <textarea name="message"></textarea>
+        <input type="submit" value="send" />
+
+    </form>
+</div>
+
+
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        var socket = io.connect('http://localhost');
+        socket.on('news', function(data){
+            console.log(data);
+            socket.emit('my other event', {my: 'data'});
+        });
+
+        socket.on('server received', function(data){
+            var html = '<li> \
+                <p> \
+                    <span class="msg-author">'+data.author+'</span> \
+                    <span class="msg-time">'+data.time+'</span> \
+                </p> \
+                <p class="msg-content">'+data.content+'</p> \
+            </li>';
+
+            $('#message-window ul').append(html);
+        });
+
+
+
+        var form = document.getElementById('myForm');
+        form.onsubmit = function(e){
+            e.preventDefault();
+            var msg = form.message.value;
+            var author = form.name.value || 'anonymous';
+            var timestamp = new Date().toLocaleString();
+            var room = form.room.value;
+
+            var chatData = {
+                time: timestamp,
+                content: msg,
+                author: author,
+                room: room
+            };
+
+            socket.emit('chat', chatData);
+        };
+    </script>
+</body>
+</html>
